@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/users/:name', (req, res) => {
-  const { name } = req.params;
-  //LOGIC HERE
-  res.send({ name });
-});
+const { getUserHandler : handler } = require('../../handler');
+const { handlerMiddleware } = require('../../middleware');
+
+router.get(
+  '/users/:name',
+  handlerMiddleware(handler)
+);
 
 module.exports = router;

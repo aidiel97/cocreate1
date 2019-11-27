@@ -1,19 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/books', (req, res) => {
-  const books = [
-    {
-      title: 'Harry Potter',
-      price: 2000
-    },
-    {
-      title: 'Lorem Ipsum for Dummy',
-      price: 3000
-    }
-  ];
-  //LOGIC HERE
-  res.send({ books });
-});
+const { getBooksHandler: handler } = require('../../handler');
+const { handlerMiddleware } = require('../../middleware');
+
+router.get(
+  '/books',
+  handlerMiddleware(handler)
+);
 
 module.exports = router;
