@@ -1,17 +1,23 @@
-const express = require('express');
-const app = express();
-const port = 3000;
+const DbConnector = require('./DbConnector');
 
-app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+const opts = {
+    uri: 'mongodb+srv://jenius:cocreate2019@cluster0-efoyc.mongodb.net/test'
+}
 
-app.get('/:id', (req, res) => {
-  res.send({
-    param: req.params.id,
-    query: req.query.name
-  })
-});
+const start = async () => {
+    const dbConnector = new DbConnector(opts);
+    const client = await dbConnector.connect();
+    const db = client.db("test");
 
-app.post('/', (req, res) => res.send(req.body));
+    const collection = await dbConnector.getCollection(db, 'users_1');
+    const insert = await dbConnector.insertOne(collection, {
+        name: 'Eric',
+        job: 'Programmer',
+        age: '27',
+        status: 'coding'
+    });
+    const result = await dbConnector.findOne(collection, { name: 'Eric' });
+    console.log(result);
+};
 
-app.listen(port, () => console.log(`app listen on port ${port}`));
+start();
