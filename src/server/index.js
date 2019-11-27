@@ -1,10 +1,13 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const express = require('express');
 const app = express();
 const port = 3000;
 
 const router = require('../router');
 const { errorHelper, notFoundHandler } = require('../utils');
-const { DbConnector } = require('../connector'):
+const { DbConnector } = require('../connector');
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
@@ -16,7 +19,7 @@ app.use(errorHelper);
 
 // initiate mongodb
 const dbOpts = {
-    uri: 'mongodb+srv://jenius:cocreate2019@cluster0-efoyc.mongodb.net/test'
+    uri: process.env.MONGO_URI
 }
 const dbConnector = new DbConnector(dbOpts);
 dbConnector.connect();
