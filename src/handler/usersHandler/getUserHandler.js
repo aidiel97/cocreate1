@@ -5,7 +5,7 @@ const getUserHandler = async (req, res) => {
   const collectionName = process.env.MONGO_DB_COLLECTION_USERS;
 
   try {
-    const result = await db.findOne(collectionName, { name: name });
+    const result = await db.findOne(collectionName, { username: name });
 
     if (!result){
       res.send({ message: "User not found!"} );
