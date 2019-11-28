@@ -3,7 +3,6 @@ const collectionName = 'users';
 
 const registerUserHandler = async (req, res) => {
   const { db } = req.app.locals;
-  const { name } = req.params;
 
   const payload = {
     username: req.body.username.trim(),

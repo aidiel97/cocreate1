@@ -6,6 +6,7 @@ const { registerUserHandler } = require('../../handler/usersHandler');
 
 router.post(
   '/register',
+  schemaMiddleware(userSchema),
   registerUserHandler,
 );
 

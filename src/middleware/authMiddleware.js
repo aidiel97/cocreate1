@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 const authMid = async(req, res, next) => {
     let errResult = {
         code: 403,
@@ -7,7 +9,7 @@ const authMid = async(req, res, next) => {
     const auth = req.headers.authorization;
 
     if (!auth) {
-        return next(new RequestError(errResult.message, errResult.message, errResult.code));
+        return res.status(errResult.code).send(errResult)
     }
 
     const authArrSplit = auth.split(' ')
@@ -19,13 +21,16 @@ const authMid = async(req, res, next) => {
     }
 
     const accessToken = authArrSplit[1]
-    let decoded;
     try {
-        decoded = jwt.verify(accessToken, keyJwt);
-        req.app.locals.user = decoded
+        const decoded = jwt.verify(accessToken, process.env.JWT_KEY);
+
+        // assign this variable to next request
+        req.app.locals.userInfo = decoded
         return next()
     } catch (err) {
         console.error(err);
         return res.status(errResult.code).send(errResult)
     }
 }
+
+module.exports = authMid;
