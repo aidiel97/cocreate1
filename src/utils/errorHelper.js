@@ -3,7 +3,9 @@ class CustomError extends Error {
     super(message);
     Error.captureStackTrace(this, this.constructor);
     this.name = this.constructor.name;
-    (this.code = code), (this.statusCode = status), (this.message = message);
+    this.code = code;
+    this.statusCode = status;
+    this.message = message;
   }
 }
 
@@ -29,7 +31,9 @@ const RequestError = class extends CustomError {
   constructor(message, code, status) {
     super(message);
     this.name = this.constructor.name;
-    (this.code = code), (this.statusCode = status), (this.message = message);
+    this.code = code;
+    this.statusCode = status;
+    this.message = message;
   }
 };
 
@@ -48,7 +52,7 @@ const errorHelper = (err, req, res, next) => {
   res.errMessage = message;
   res.status(statusCode || 500).send({
     statusCode: statusCode || 500,
-    message: name !== 'ReferenceError' ? message : 'Something went wrong!',
+    message: name || 'Internal server error',
     code: code || 'INTERNAL_SERVER_ERROR'
   });
 };
