@@ -9,6 +9,21 @@ const router = require('../router');
 const { errorHelper, notFoundHandler } = require('../utils');
 const { DbConnector } = require('../connector');
 
+const connectDb = async (app) => {
+    // initiate mongodb
+    const dbOpts = {
+        uri: process.env.MONGO_URI
+    }
+    const dbName = process.env.MONGO_DB_NAME;
+
+    const dbConnector = new DbConnector(dbOpts);
+    await dbConnector.connect(dbName);
+
+    app.locals.db = dbConnector;
+};
+
+connectDb(app);
+
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
@@ -16,16 +31,5 @@ router(app);
 
 app.use(notFoundHandler);
 app.use(errorHelper);
-
-// initiate mongodb
-const dbOpts = {
-    uri: process.env.MONGO_URI
-}
-const dbConnector = new DbConnector(dbOpts);
-dbConnector.connect();
-
-app.locals = {
-    dbConnector
-};
 
 app.listen(port, () => console.log(`app listen on port ${port}`));
