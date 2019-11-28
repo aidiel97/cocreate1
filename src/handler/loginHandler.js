@@ -6,16 +6,12 @@ const collectionName = 'users';
 const loginHandler = async (req, res) => {
   const { db } = req.app.locals;
 
-  const coll = db.collection(collectionName)
-
   const payload = {
     username: req.body.username,
     password: crypto.createHash('sha256').update(req.body.password).digest('hex')
   };
 
-  console.log('payload', payload)
-
-  const findUser = await coll.findOne(payload);
+  const findUser = await db.findOne(collectionName, payload);
 
   if (!findUser) {
     const errResult = {
@@ -23,24 +19,22 @@ const loginHandler = async (req, res) => {
       message: 'Unauthorized'
     };
 
-    return res.status(401).send(errResult)
+    return res.status(401).json(errResult)
   }
-
-  const keyJwt = 'shhhhh';
 
   const payloadJwt = { 
     username: findUser.username,
     name: findUser.name,
   }
 
-  const token = jwt.sign(payloadJwt, keyJwt);
+  const token = jwt.sign(payloadJwt, process.env.JWT_KEY);
 
   const result = {
     type: 'Bearer',
     accessToken: token
   }
 
-  return res.send(result)
+  return res.status(200).json(result)
 }
 
 module.exports = loginHandler;

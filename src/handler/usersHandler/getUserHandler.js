@@ -1,14 +1,21 @@
 
-const getUserHandler = (req, res) => {
-  const { dbConnector } = req.app.locals;
+const getUserHandler = async (req, res) => {
+  const { db } = req.app.locals;
   const { name } = req.params;
+  const collectionName = process.env.MONGO_DB_COLLECTION_USERS;
 
-  const client = dbConnector.getClient(); 
-  const db = client.db('test');
-  const collection = await dbConnector.getCollection(db, 'users');
-  const result = dbConnector.findOne(collection, { name: name });
+  try {
+    const result = await db.findOne(collectionName, { username: name });
 
-  res.send({ result });
-}
+    if (!result){
+      res.send({ message: "User not found!"} );
+    }
+
+    res.send({ result });
+  }
+  catch(err){
+    throw new Error(err);
+  }
+};
 
 module.exports = getUserHandler;

@@ -3,8 +3,7 @@ const collectionName = 'users';
 
 const registerUserHandler = async (req, res) => {
   const { db } = req.app.locals;
-
-  const coll = db.collection(collectionName)
+  const { name } = req.params;
 
   const payload = {
     username: req.body.username.trim(),
@@ -12,7 +11,7 @@ const registerUserHandler = async (req, res) => {
     password: crypto.createHash('sha256').update(req.body.password).digest('hex')
   };
 
-  const insResult = await coll.insertOne(payload);
+  const insResult = await db.insertOne(collectionName, payload);
   
   if (!insResult) {
     const errResult = {
@@ -30,7 +29,7 @@ const registerUserHandler = async (req, res) => {
     status: 'SUCCESS'
   };
 
-  return res.send(result)
+  return res.status(201).json(result)
 };
 
 module.exports = registerUserHandler;

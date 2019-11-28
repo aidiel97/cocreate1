@@ -1,18 +1,27 @@
 const mongodb = require('mongodb');
+const {
+    NotFoundError
+} = require('../utils');
 
 class DbConnector {
     constructor(opts) {
         Object.assign(this, { opts });
     };
 
-    async connect(){
-        const { uri } = this.opts;
+    async connect(dbName){
+        const { uri, logger } = this.opts;
         const client = await mongodb.MongoClient.connect(uri, { useUnifiedTopology: true, useNewUrlParser: true });
         if (client) {
-            console.log('Successfully connected to DB!');
+            logger.info('Successfully connected to DB!');
         }
-        Object.assign(this, { client });
-        return client;
+
+        const result = {
+            db: client.db(dbName),
+            client
+        };
+
+        Object.assign(this, result);
+        return result;
     }
 
     async disconnect() {
@@ -23,7 +32,8 @@ class DbConnector {
         return this.client;
     }
 
-    async createCollection(db, name){
+    async createCollection(name){
+        const db = this.db;
         return new Promise((resolve) => {
             db.createCollection(name, { strict: true }).then((res) => {
                 resolve(true);
@@ -33,54 +43,62 @@ class DbConnector {
         });
     }
 
-    async getCollection(db, name){
-        return db.collection(name);
+    async getCollection(collectionName){
+        return this.db.collection(collectionName);
     }
 
-    async insertOne(collection, payload) {
+    async insertOne(collectionName, payload) {
+        const collection = await this.getCollection(collectionName);
         const result = await collection.insertOne(payload);
         return result.result.ok > 0;
     }
 
-    async insert(collection, payload) {
+    async insert(collectionName, payload) {
+        const collection = await this.getCollection(collectionName);
         const result = await collection.insert(payload);
         return result.result.ok > 0;
     }
 
-    async findOne(collection, filter) {
+    async findOne(collectionName, filter) {
+        const collection = await this.getCollection(collectionName);
         return collection.findOne(filter);
     }
 
-    async find(collection, filter){
+    async find(collectionName, filter){
+        const collection = await this.getCollection(collectionName);
         return collection.find(filter).toArray();
     }
 
-    async findOneAndUpdate(collection, filter, payload) {
+    async findOneAndUpdate(collectionName, filter, payload) {
+        const collection = await this.getCollection(collectionName);
         const result = await collection.findOneAndUpdate(filter, { $set: payload });
         return result.value;
     }
 
-    async updateOne(collection, filter, payload){
+    async updateOne(collectionName, filter, payload){
+        const collection = await this.getCollection(collectionName);
         const result = await collection.updateOne(filter, { $set: payload });
         return result.result.ok > 0;
     }
 
-    async updateMany(collection, filter, payload) {
+    async updateMany(collectionName, filter, payload) {
+        const collection = await this.getCollection(collectionName);
         const result = await collection.updateMany(filter, { $set: payload });
         return result.result.ok > 0;
     }
 
-    async deleteOne(collection, filter){
-        const check = await this.findOne(collection, filter);
+    async deleteOne(collectionName, filter){
+        const collection = await this.getCollection(collectionName);
+        const check = await this.findOne(collectionName, filter);
 
         if (check) {
             const result = await collection.deleteOne(filter);
             return result.result.ok > 0;
         }
 
-        throw new Error('Cannot delete unavailable data!');
+        throw new NotFoundError();
     }
 
-};
+}
 
 module.exports = DbConnector;
