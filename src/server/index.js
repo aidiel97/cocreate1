@@ -17,14 +17,15 @@ const { DbConnector } = require('../connector');
 const connectDb = async (app) => {
     // initiate mongodb
     const dbOpts = {
-        uri: process.env.MONGO_URI
-    }
+        uri: process.env.MONGO_URI,
+        logger
+    };
     const dbName = process.env.MONGO_DB_NAME;
 
     const dbConnector = new DbConnector(dbOpts);
     await dbConnector.connect(dbName);
 
-    app.locals.db = dbConnector;
+    Object.assign(app.locals, { db: dbConnector });
 };
 
 connectDb(app);
@@ -38,5 +39,7 @@ router(app);
 
 app.use(notFoundHandler);
 app.use(errorHelper);
+
+Object.assign(app.locals, { logger });
 
 app.listen(port, () => logger.info(`app listen on port ${port}`));

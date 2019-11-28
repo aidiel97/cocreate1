@@ -1,4 +1,7 @@
 const mongodb = require('mongodb');
+const {
+    NotFoundError
+} = require('../utils');
 
 class DbConnector {
     constructor(opts) {
@@ -6,11 +9,12 @@ class DbConnector {
     };
 
     async connect(dbName){
-        const { uri } = this.opts;
+        const { uri, logger } = this.opts;
         const client = await mongodb.MongoClient.connect(uri, { useUnifiedTopology: true, useNewUrlParser: true });
         if (client) {
-            console.log('Successfully connected to DB!');
+            logger.info('Successfully connected to DB!');
         }
+
         const result = {
             db: client.db(dbName),
             client
@@ -92,9 +96,9 @@ class DbConnector {
             return result.result.ok > 0;
         }
 
-        throw new Error('Cannot delete unavailable data!');
+        throw new NotFoundError();
     }
 
-};
+}
 
 module.exports = DbConnector;

@@ -1,3 +1,5 @@
+const { CustomError } = require('../../utils');
+
 const registerUserHandler = async (req, res) => {
   //LOGIC HERE
   const { db } = req.app.locals;
@@ -10,7 +12,7 @@ const registerUserHandler = async (req, res) => {
       res.send(result);
     }
 
-    throw new Error("Failed to insert!");
+    throw new CustomError("Failed to insert!");
   }
   catch(err){
     throw err;

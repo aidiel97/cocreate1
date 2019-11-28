@@ -16,6 +16,6 @@ const getUserHandler = async (req, res) => {
   catch(err){
     throw new Error(err);
   }
-}
+};
 
 module.exports = getUserHandler;
