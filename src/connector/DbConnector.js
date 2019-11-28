@@ -50,7 +50,7 @@ class DbConnector {
     async insertOne(collectionName, payload) {
         const collection = await this.getCollection(collectionName);
         const result = await collection.insertOne(payload);
-        return result.result.ok > 0;
+        return result;
     }
 
     async insert(collectionName, payload) {

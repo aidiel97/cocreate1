@@ -23,9 +23,10 @@ const loginHandler = async (req, res) => {
   }
 
   const payloadJwt = { 
+    id: findUser._id,
     username: findUser.username,
-    name: findUser.name,
-  }
+    name: findUser.name
+  };
 
   const token = jwt.sign(payloadJwt, process.env.JWT_KEY);
 
