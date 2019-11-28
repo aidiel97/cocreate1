@@ -6,17 +6,16 @@ const opts = {
 
 const start = async () => {
     const dbConnector = new DbConnector(opts);
-    const client = await dbConnector.connect();
-    const db = client.db("test");
+    await dbConnector.connect("test");
+    const collectionName = 'users_1';
 
-    const collection = await dbConnector.getCollection(db, 'users_1');
-    const insert = await dbConnector.insertOne(collection, {
-        name: 'Eric',
+    const insert = await dbConnector.insertOne(collectionName, {
+        name: 'Gusto',
         job: 'Programmer',
-        age: '27',
-        status: 'coding'
+        age: '35',
+        status: 'liatin'
     });
-    const result = await dbConnector.findOne(collection, { name: 'Eric' });
+    const result = await dbConnector.find(collectionName, { job: 'Programmer' });
     console.log(result);
 };
 
