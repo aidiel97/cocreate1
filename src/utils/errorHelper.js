@@ -53,8 +53,6 @@ const errorHelper = (err, req, res, next) => {
   });
 };
 
-
-
 module.exports = {
   errorHelper,
   notFoundHandler,

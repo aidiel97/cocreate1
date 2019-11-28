@@ -6,7 +6,12 @@ const app = express();
 const port = 3000;
 
 const router = require('../router');
-const { errorHelper, notFoundHandler } = require('../utils');
+const { 
+  errorHelper, 
+  notFoundHandler,
+  requestLogger,
+  logger
+} = require('../utils');
 const { DbConnector } = require('../connector');
 
 const connectDb = async (app) => {
@@ -27,9 +32,11 @@ connectDb(app);
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
+app.use(requestLogger);
+
 router(app);
 
 app.use(notFoundHandler);
 app.use(errorHelper);
 
-app.listen(port, () => console.log(`app listen on port ${port}`));
+app.listen(port, () => logger.info(`app listen on port ${port}`));

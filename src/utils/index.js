@@ -1,3 +1,7 @@
 const errorHelper = require('./errorHelper');
+const loggerHelper = require('./loggerHelper');
 
-module.exports = { ...errorHelper };
+module.exports = { 
+  ...errorHelper,
+  ...loggerHelper
+};
